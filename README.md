@@ -1,37 +1,39 @@
 # 🐢 Learning-ROS2
 
+![ROS2 Version](https://img.shields.io/badge/ROS2-Humble-blue?logo=ros\&logoColor=white) ![License](https://img.shields.io/badge/License-Apache--2.0-green) ![Platform](https://img.shields.io/badge/Platform-Manjaro%20Linux-lightgrey?logo=arch-linux\&logoColor=white) ![Docker](https://img.shields.io/badge/Container-Docker-blue?logo=docker\&logoColor=white)
+
 A personal workspace for learning and experimenting with **ROS 2 Humble** using Docker, GPU acceleration (NVIDIA RTX 4060), and VS Code integration. This README documents setup, installation, and usage so anyone can reproduce the environment.
 
 ---
 
 ## 📖 What is ROS 2?
 
-ROS 2 (Robot Operating System 2) is a flexible framework for writing robot software. It provides:
+[ROS 2 (Robot Operating System 2)](https://docs.ros.org/en/humble/) is a flexible framework for writing robot software. It provides:
 
-- A publish/subscribe communication system between nodes
-- Tools for simulation (Gazebo, RViz2)
-- Libraries for robotics, AI, and machine learning integration
-- Support for C++ and Python development
+* A publish/subscribe communication system between nodes
+* Tools for simulation (Gazebo, RViz2)
+* Libraries for robotics, AI, and machine learning integration
+* Support for C++ and Python development
 
 ---
 
-## 📚 Table of contents
+## 📚 Table of Contents
 
-- [Overview](#-overview)
-- [Design choices](#-design-choices)
-- [Prerequisites (Host: Manjaro Linux)](#-prerequisites-host-manjaro-linux)
-- [Recommended (Docker) installation](#-recommended-docker-installation)
+* [Overview](#-overview)
+* [Design Choices](#-design-choices)
+* [Prerequisites (Host: Manjaro Linux)](#-prerequisites-host-manjaro-linux)
+* [Recommended (Docker) Installation](#-recommended-docker-installation)
 
-  - [NVIDIA / GPU passthrough](#nvidia--gpu-passthrough)
-  - [Docker Compose example](#docker-compose-example)
-  - [Common container workflow](#common-container-workflow)
-
-- [Developing inside the container (VS Code)](#developing-inside-the-container-vs-code)
-- [Building & running ROS 2 packages](#building--running-ros-2-packages)
-- [Alternative installation methods](#-alternative-installation-methods)
-- [Tips & troubleshooting](#tips--troubleshooting)
-- [Resources & further reading](#resources--further-reading)
-- [License](#license)
+  * [NVIDIA / GPU Passthrough](#nvidia--gpu-passthrough)
+  * [Docker Compose Example](#docker-compose-example)
+  * [Common Container Workflow](#common-container-workflow)
+* [Developing Inside the Container (VS Code)](#-developing-with-vs-code)
+* [Building & Running ROS 2 Packages](#-building-your-workspace-inside-container)
+* [Alternative Installation Methods](#-alternative-installation-methods-on-manjaro)
+* [Tips & Troubleshooting](#-tips--troubleshooting)
+* [Resources & Further Reading](#-resources--further-reading)
+* [Contributing](#-contributing)
+* [License](#-license)
 
 ---
 
@@ -41,13 +43,13 @@ This repository prioritizes a **Docker-first** approach so you get a reproducibl
 
 **Why Docker?**
 
-- Isolates ROS 2 Humble environment from host package manager (Manjaro)
-- Easier to enable NVIDIA GPU support via `--gpus` and `nvidia-container-toolkit`
-- Quick reproducible setup for teammates or future you
+* Isolates ROS 2 Humble environment from host package manager (Manjaro)
+* Easier to enable NVIDIA GPU support via `--gpus` and `nvidia-container-toolkit`
+* Quick reproducible setup for teammates or future you
 
 ---
 
-## ⚙️ Design choices
+## ⚙️ Design Choices
 
 1. **Docker (Recommended)** – reproducible, GPU-enabled, minimal host changes.
 2. **AUR packages** – quicker to get binaries but can break with rolling releases.
@@ -59,10 +61,9 @@ This repository prioritizes a **Docker-first** approach so you get a reproducibl
 
 These steps assume you have an NVIDIA GPU (RTX 4060) and want GPU acceleration inside the container.
 
-1. Install NVIDIA drivers (host):
+1. Install NVIDIA drivers (host) and verify:
 
 ```bash
-# verify drivers are active
 nvidia-smi
 ```
 
@@ -91,7 +92,7 @@ You should see your RTX 4060 listed in the container output.
 
 ---
 
-## ✅ Recommended (Docker) installation
+## ✅ Recommended (Docker) Installation
 
 ### 1) Clone this repository
 
@@ -102,22 +103,21 @@ cd Learning-ROS2
 
 ### 2) Example Dockerfile (optional)
 
-If you want a custom image (base: ubuntu 22.04 + ROS Humble):
+If you want a custom image (base: Ubuntu 22.04 + ROS Humble):
 
 ```dockerfile
 # Dockerfile
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install basic dependencies and ROS 2 Humble
+# Install basic dependencies and ROS 2 keys & repos (follow official instructions)
 RUN apt-get update && apt-get install -y \
-    curl gnupg2 lsb-release locales sudo \
-    && locale-gen en_US.UTF-8
+    curl gnupg2 lsb-release locales sudo && \
+    locale-gen en_US.UTF-8
 
-# Add ROS 2 repo and install (shortened for brevity)
-# ... follow official ROS 2 instructions to add keys and apt sources
+# (Add ROS 2 apt repository & install ros-humble-desktop or ros-humble-ros-base as needed)
 
-# Create a user (optional)
+# Optional: create a developer user
 RUN useradd -m developer && echo "developer:developer" | chpasswd && adduser developer sudo
 USER developer
 WORKDIR /home/developer
@@ -125,14 +125,14 @@ WORKDIR /home/developer
 CMD ["/bin/bash"]
 ```
 
-> Tip: You can start from `ros:humble` or `ros:humble-ros-base` official images for faster iteration.
+> Tip: Use `ros:humble` or `ros:humble-ros-base` official images for faster iteration when possible.
 
 ### 3) docker-compose.yml (example)
 
 A minimal `docker-compose.yml` for development with GPU support:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   ros2_dev:
     image: ros:humble
@@ -161,7 +161,7 @@ services:
 docker compose up -d --build
 ```
 
-Attach to the container shell:
+**Attach to the container shell:**
 
 ```bash
 docker exec -it ros2_dev bash
@@ -179,7 +179,7 @@ source /opt/ros/humble/setup.bash
 
 You can configure VS Code to open a terminal that drops you into the running container with your workspace sourced. Examples for `.vscode/settings.json` and `.vscode/tasks.json` are shown below.
 
-**Example: `settings.json` terminal profile**
+**Example: `.vscode/settings.json` terminal profile**
 
 ```json
 {
@@ -196,7 +196,7 @@ You can configure VS Code to open a terminal that drops you into the running con
 }
 ```
 
-**Example: `tasks.json` snippets for running talker/listener**
+**Example: `.vscode/tasks.json` snippets for running talker/listener**
 
 ```json
 {
@@ -216,22 +216,21 @@ You can configure VS Code to open a terminal that drops you into the running con
 }
 ```
 
-> Tip: Use the Remote - Containers extension if you prefer VS Code to manage containers for you.
+> Tip: Use the **Remote - Containers** extension if you prefer VS Code to manage containers for you.
 
 ---
 
-## 🛠 Building your workspace (inside container)
+## 🛠 Building Your Workspace (inside container)
 
 Assuming your ROS 2 workspace is at `/root/LEARN` inside the container:
 
 ```bash
-# inside container
 cd /root/LEARN
 colcon build
 source install/setup.bash
 ```
 
-Install extra packages if needed (example):
+Install extra packages if needed:
 
 ```bash
 apt update && apt install -y ros-humble-turtlesim
@@ -250,44 +249,44 @@ ros2 run demo_nodes_cpp listener
 
 ---
 
-## 🔁 Common workflow (quick checklist)
+## 🔁 Common Workflow (Quick Checklist)
 
-- Start container: `docker compose up -d`
-- Attach shell: `docker exec -it ros2_dev bash`
-- Source ROS 2 and workspace: `source /opt/ros/humble/setup.bash && source /root/LEARN/install/setup.bash`
-- Build: `colcon build`
-- Run nodes with `ros2 run` or `ros2 launch`
-
----
-
-## 🧭 Alternative installation methods on Manjaro
-
-1. **AUR packages** – search for `ros-humble-*` packages in AUR. Good for quick native installs but may require maintenance.
-2. **Source build** – follow official ROS 2 instructions to build from source. This is useful if you need bleeding-edge patches or custom core changes.
+* Start container: `docker compose up -d`
+* Attach shell: `docker exec -it ros2_dev bash`
+* Source ROS 2 and workspace: `source /opt/ros/humble/setup.bash && source /root/LEARN/install/setup.bash`
+* Build: `colcon build`
+* Run nodes with `ros2 run` or `ros2 launch`
 
 ---
 
-## 🛠 Tips & troubleshooting
+## 🧭 Alternative Installation Methods on Manjaro
 
-- `nvidia-smi` not visible in container: ensure `nvidia-container-toolkit` is installed and `docker run --gpus all` works.
-- Permission issues with Docker: add your user to the `docker` group or use `sudo` for Docker commands.
-- `DISPLAY` issues for GUI apps: ensure X11 socket is mounted (`/tmp/.X11-unix`) and `xhost +local:root` (or better: more secure alternatives).
-- If `colcon build` fails: check package `package.xml` and `CMakeLists.txt` for missing dependencies, and `rosdep` can help install OS dependencies.
+* **AUR packages** – e.g., `yay -S ros-humble-desktop`. Good for native installs but may require maintenance on rolling distributions.
+* **Source build** – follow the official ROS 2 instructions to build from source. Useful for bleeding-edge patches or custom core changes.
 
 ---
 
-## 🔗 Resources & further reading
+## 🛠 Tips & Troubleshooting
 
-- ROS 2 official docs: [https://docs.ros.org/en/humble/](https://docs.ros.org/en/humble/)
-- Colcon build tool: [https://colcon.readthedocs.io/](https://colcon.readthedocs.io/)
-- NVIDIA Container Toolkit: [https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/)
-- ROS 2 tutorials (beginner-friendly)
+* **GPU not visible in container:** ensure `nvidia-container-toolkit` is installed and `docker run --gpus all ...` works.
+* **Docker permission issues:** add your user to the `docker` group or use `sudo` for Docker commands.
+* **GUI apps not showing:** mount the X11 socket (`/tmp/.X11-unix`) and run `xhost +local:root` (or a more secure alternative).
+* **colcon build failures:** verify `package.xml` and `CMakeLists.txt` for missing dependencies and use `rosdep` to install OS dependencies.
+
+---
+
+## 🔗 Resources & Further Reading
+
+* ROS 2 official docs: [https://docs.ros.org/en/humble/](https://docs.ros.org/en/humble/)
+* Colcon build tool: [https://colcon.readthedocs.io/](https://colcon.readthedocs.io/)
+* NVIDIA Container Toolkit: [https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/)
+* ROS 2 tutorials: [https://docs.ros.org/en/humble/Tutorials.html](https://docs.ros.org/en/humble/Tutorials.html)
 
 ---
 
 ## 🤝 Contributing
 
-Feel free to open issues or PRs if you have suggestions, updates for newer ROS 2 distributions or better Docker setups.
+Feel free to open issues or PRs if you have suggestions, updates for newer ROS 2 distributions, or improved Docker setups.
 
 ---
 
@@ -296,3 +295,4 @@ Feel free to open issues or PRs if you have suggestions, updates for newer ROS 2
 Licensed under the **Apache-2.0** License.
 
 ---
+
