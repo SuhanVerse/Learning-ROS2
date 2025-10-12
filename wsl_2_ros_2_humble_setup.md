@@ -1,6 +1,6 @@
 # 🚀 ROS 2 Humble on WSL2 (Ubuntu 22.04) — Ready-to-copy Setup Guide
 
-This is a ready-to-copy, step-by-step guide to set up **ROS 2 Humble** inside **WSL2 (Ubuntu 22.04)** on **Windows 11**. It includes GUI support (RViz/Gazebo via WSLg), developer tools, optional GPU hints, and troubleshooting tips.
+This is a step-by-step guide to set up **ROS 2 Humble** inside **WSL2 (Ubuntu 22.04)** on **Windows 11**. It includes GUI support (RViz/Gazebo via WSLg), developer tools, optional GPU hints, and troubleshooting tips.
 
 > Tested flow: run the PowerShell commands on Windows, then run the Linux commands inside the Ubuntu WSL distro.
 
@@ -195,6 +195,3 @@ wsl --shutdown
 - For advanced setups (native Windows GPU + specific CUDA toolkits), follow NVIDIA & Microsoft docs for the latest drivers and compatibility.
 
 ---
-
-*Generated: ready-to-copy `WSL2-ROS2-Humble-Setup.md` — paste into your repo and commit.*
-
