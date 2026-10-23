@@ -2,9 +2,20 @@
 
 ![ROS2 Version](https://img.shields.io/badge/ROS2-Humble-blue?logo=ros\&logoColor=white) ![License](https://img.shields.io/badge/License-Apache--2.0-green) ![Platform](https://img.shields.io/badge/Platform-Manjaro%20Linux-lightgrey?logo=arch-linux\&logoColor=white) ![Docker](https://img.shields.io/badge/Container-Docker-blue?logo=docker\&logoColor=white)
 
-A personal workspace for learning and experimenting with **ROS 2 Humble** using Docker, GPU acceleration (NVIDIA RTX 4060), and VS Code integration. This README documents setup, installation, and usage so anyone can reproduce the environment.
+A personal workspace for learning and experimenting with **ROS 2 Humble** using Docker, GPU acceleration (NVIDIA RTX 4060), and VS Code integration. The notes cover the author’s Docker/NVIDIA setup and common ROS commands; adapt the host-specific examples to your own machine.
 
 ---
+
+## Start here
+
+This repository contains learning notes, not a ROS package workspace or a ready-to-run container definition.
+
+- [Main setup walkthrough](#-recommended-docker-installation): Manjaro host, Docker and optional NVIDIA GPU support.
+- [ROS 2 notes](Notes.md): concepts and commands to revisit while learning.
+- [WSL 2 / ROS 2 Humble guide](wsl_2_ros_2_humble_setup.md): the separate Windows/WSL setup path.
+- [Build/run examples](#-building-your-workspace-inside-container): use these in a workspace containing your own packages.
+
+The Dockerfile, Compose and VS Code snippets below are examples. Save and adapt the relevant snippets before running their commands. The sample Dockerfile intentionally leaves ROS repository/package installation as a placeholder; it does not install ROS by itself. The examples are not a tested, pinned environment definition. A GPU is optional for basic ROS publisher/subscriber learning.
 
 ## 📖 What is ROS 2?
 
@@ -155,7 +166,7 @@ services:
     command: /bin/bash
 ```
 
-**Start the container:**
+**After saving the Compose example as `docker-compose.yml` and adjusting its workspace mount, start the container:**
 
 ```bash
 docker compose up -d --build
@@ -244,6 +255,8 @@ ros2 run turtlesim turtlesim_node
 
 # Terminal 2
 ros2 run demo_nodes_cpp talker
+
+# Terminal 3 (source ROS in this shell too)
 ros2 run demo_nodes_cpp listener
 ```
 
